@@ -4,57 +4,35 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our $script;
-my %hack;
-
-$SIG{__WARN__} = sub {
-  my $message = $_[0];
-  $message =~ s!(/loader/0x[0-9a-f]+/)(\S+) line!
-    exists $hack{$2} ? "$hack{$2} line" : "$1$2 line"!gme;
-  if ($] > 5.7) {
-    warn $message
-  } else {
-    # More for tests, but warn pre 5.8 goes down C's stderr, and is hard to tie
-    # yes, tie. That sounds like the right sort of thing for us.
-    local $\;
-    print STDERR $message;
-  }
-};
-
-$SIG{__DIE__} = sub {
-  my $message = $_[0];
-  $message =~ s!(/loader/0x[0-9a-f]+/)(\S+) line!
-    exists $hack{$2} ? "$hack{$2} line" : "$1$2 line"!gme;
-  die $message;
-};
 
 sub import {
   # OK. This is a big hack. I'm going to ignore any arguments.
-
   unshift @INC, sub {
     my ($self, $file) = @_;
     foreach my $dir (@INC) {
       next if ref $dir;
       my $full = "$dir/$file";
       if (open my $fh, "<", $full) {
-	$hack{$file} = $full;
 	# Dave made us do this too:
-	my $line = "use strict; use warnings;";
+	my @lines = ("use strict; use warnings;\n", "#line 1 \"$full\"\n");
 	# You didn't see this:
-	return $fh, sub {
+	return ($fh, sub {
 	  # We really ought to (a) document or rescind this feature
 	  # (b) if we document it, change the implementation to use filter
 	  # simple
 	  # (c) if so, check whether it falls foul of the subtle trap of
 	  # caller-filter leaves some data in the buffer, and filter gets to see
 	  # it in $_ for a second time.
-	  if ($line) {
-	    $_ = "$line $_";
-	    undef $line;
+	  if (@lines) {
+	    push @lines, $_;
+	    $_ = shift @lines;
+	    return length $_;
 	  }
-	};
+	  return 0;
+	});
       }
     }
     return;
@@ -93,9 +71,6 @@ opens the file, and attaches a source filter that adds
 "use strict; use warnings;" to the start of every file. This is naughty - it's
 not a documented feature, it may be changed or removed with no notice, and the
 current implementation is slightly buggy in subtle cases.
-
-It also changes the global warn and die handlers (C<$SIG{__WARN__}> and
-C<$SIG{__DIE__}>) to subroutines that hide
 
 =head2 EXPORT
 
