@@ -4,7 +4,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 our $script;
 
@@ -97,7 +97,7 @@ Nicholas Clark, E<lt>nick@talking.bollo.cxE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002 by Nicholas Clark
+Copyright 2002,2003 by Nicholas Clark
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

@@ -8,9 +8,9 @@ use lib 't';
 use Test::More tests => 8;
 use GagMe;
 
-# Aargh. WTF is 5.6.x's test harness doing turning on warnings when I explicity
+# Aargh. WTF is test harness doing turning on warnings when I explicity
 # don't want them?
-$^W = 0 if $^W and $] < 5.008;
+$^W = 0;
 
 $SIG{__WARN__} = sub {print STDERR $_[0]};
 
