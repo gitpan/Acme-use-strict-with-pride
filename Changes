@@ -1,5 +1,10 @@
 Revision history for Perl extension Acme::use::strict::with::pride.
 
+0.04  Tue Jul 26 22:05:24 BST 2005
+	Dave's magnificent variable names in "use of uninitialized..." patch
+	means that on 5.9.2 and later the error message differs. So adjust the
+	test's regexp to cope with both variants.
+
 0.03  Wed Sep 24 20:54:40 BST 2003
 	Turn this file the other way up, so recent changes are at the top
 	It seems that Test::Harness now turns on warnings everywhere

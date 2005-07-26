@@ -17,7 +17,7 @@ is (eval "require Bad; 2", 2, "Should be able to use Bad");
 is ($@, "", "without an error");
 is ($::loaded{Bad}, 1, "Bad did actually get loaded?");
 like ($debug->read,
-  qr!^Use of uninitialized value in addition \(\+\) at t/Bad.pm line 6\.$!,
+  qr!^Use of uninitialized value(?: \$a)? in addition \(\+\) at t/Bad.pm line 6\.$!,
       "Is the error properly mangled");
 
 is (eval "use Naughty; 2", undef, "Should not be able to use Naughty");
